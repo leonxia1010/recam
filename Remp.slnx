@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/recam-backend-service/">
+    <Project Path="recam-backend-service/Remp.API/Remp.API.csproj" />
+  </Folder>
+</Solution>
