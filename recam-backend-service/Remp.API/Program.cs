@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 namespace Remp.API;
 
@@ -7,13 +8,16 @@ public class Program
 {
     public static void Main(string[] args)
     {
+
         var builder = WebApplication.CreateBuilder(args);
 
+        // Create SeriLog Instance
+        Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+        builder.Host.UseSerilog();
+
         // Add services to the container.
-
         builder.Services.AddControllers();
-
-        // Swagger
+        // Add Swagger
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -41,6 +45,19 @@ public class Program
 
         app.MapControllers();
 
-        app.Run();
+        try
+        {
+            Log.Information("🚀 Application starting up...");
+            app.Run();
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "❌ Application terminated unexpectedly.");
+        }
+        finally
+        {
+            Log.Information("🛑 Application shutting down...");
+            Log.CloseAndFlush();
+        }
     }
 }
