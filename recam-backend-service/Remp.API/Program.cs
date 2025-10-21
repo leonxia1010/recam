@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Remp.DataAccess.Data;
+using Remp.Application.Profiles;
 using Serilog;
 
 namespace Remp.API;
@@ -47,8 +48,11 @@ public class Program
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
             options.IncludeXmlComments(xmlPath);
         });
-        var app = builder.Build();
 
+        // Add AutoMapper
+        builder.Services.AddAutoMapper(cfg => { }, typeof(ListingCaseProfile).Assembly);
+
+        var app = builder.Build();
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
