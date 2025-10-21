@@ -1,3 +1,4 @@
 {
-  "dotnet.defaultSolution": "Remp.slnx"
+  "dotnet.defaultSolution": "Remp.slnx",
+  "markdown.validate.enabled": true
 }
