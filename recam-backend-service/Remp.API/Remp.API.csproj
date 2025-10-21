@@ -22,4 +22,8 @@
     <Folder Include="Controllers/" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Remp.Application\Remp.Application.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,7 @@
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using Remp.DataAccess.Data;
 using Serilog;
 
 namespace Remp.API;
@@ -17,6 +19,13 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllers();
+
+        // Add Database
+        builder.Services.AddDbContext<RempSQLServerDbContext>(options =>
+        {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("RempSQLServer"));
+        });
+
         // Add Swagger
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
