@@ -26,6 +26,13 @@ public class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("RempSQLServer"));
         });
 
+        builder.Services.Configure<RempMongoDbSettings>(options =>
+        {
+            options.ConnectionString = builder.Configuration.GetConnectionString("RempMongoDb");
+            options.DatabaseName = builder.Configuration["DatabaseSettings:DatabaseName"];
+        });
+        builder.Services.AddSingleton<RempMongoDbContext>();
+
         // Add Swagger
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
