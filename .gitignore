@@ -65,3 +65,7 @@ CLAUDE.md
 
 # Script
 scripts/
+
+# env
+.env
+.env.local
