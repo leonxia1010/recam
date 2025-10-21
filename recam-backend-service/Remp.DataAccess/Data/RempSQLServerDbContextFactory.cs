@@ -15,9 +15,14 @@ public class RempSQLServerDbContextFactory : IDesignTimeDbContextFactory<RempSQL
 
         var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Remp.API");
 
-        var configuration = new ConfigurationBuilder().SetBasePath(basePath).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).AddJsonFile("appsettings.Development.json", optional: false).AddEnvironmentVariables().Build();
+        var configuration = new ConfigurationBuilder().SetBasePath(basePath).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).AddJsonFile("appsettings.Development.json", optional: false).Build();
 
         var connectionString = configuration.GetConnectionString("RempSQLServer");
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidDataException("Connection string 'RempSQLService' not found.");
+        }
 
         var optionsBuilder = new DbContextOptionsBuilder<RempSQLServerDbContext>();
 
