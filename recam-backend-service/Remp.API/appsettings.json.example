@@ -1,7 +1,11 @@
 {
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=RempDB;User Id=YOUR_USERNAME;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
+    "RempSQLServer": "Server=YOUR_SERVER;Database=YOUR_DATABASE;User Id=YOUR_USERNAME;Password=YOUR_PASSWORD;TrustServerCertificate=True;",
+    "RempMongoDb": "mongodb://YOUR_MONGO_USERNAME:YOUR_MONGO_PASSWORD@YOUR_MONGO_HOST:YOUR_MONGO_PORT"
+  },
+  "DatabaseSettings": {
+    "DatabaseName": "YOUR_MONGO_DATABASE"
   },
   "Serilog": {
     "MinimumLevel": {
