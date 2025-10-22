@@ -43,8 +43,10 @@ public class Program
 
             builder.Services.Configure<RempMongoDbSettings>(options =>
             {
-                options.ConnectionString = builder.Configuration.GetConnectionString("RempMongoDb") ?? string.Empty;
-                options.DatabaseName = builder.Configuration["DatabaseSettings:DatabaseName"] ?? string.Empty;
+                options.ConnectionString = builder.Configuration.GetConnectionString("RempMongoDb")
+                    ?? throw new InvalidOperationException("Connection string 'RempMongoDb' not found in configuration.");
+                options.DatabaseName = builder.Configuration["DatabaseSettings:DatabaseName"]
+                    ?? throw new InvalidOperationException("Configuration 'DatabaseSettings:DatabaseName' not found.");
             });
             builder.Services.AddSingleton<RempMongoDbContext>();
 
@@ -86,9 +88,9 @@ public class Program
                 Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
                 Log.Information("Listening on: {Urls}", urls);
 
-                if (app.Environment.IsDevelopment())
+                if (app.Environment.IsDevelopment() && addresses != null && addresses.Any())
                 {
-                    var firstUrl = addresses?.FirstOrDefault() ?? "http://localhost:5000";
+                    var firstUrl = addresses.First();
                     Log.Information("Swagger UI: {SwaggerUrl}/swagger", firstUrl);
                     Log.Information("Swagger JSON: {SwaggerUrl}/swagger/v1/swagger.json", firstUrl);
                 }
