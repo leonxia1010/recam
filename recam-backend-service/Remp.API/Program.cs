@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Remp.DataAccess.Data;
+using Remp.Application.Profiles;
 using Serilog;
 using Serilog.Events;
 using Microsoft.AspNetCore.Hosting.Server;
