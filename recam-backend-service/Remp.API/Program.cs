@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Remp.DataAccess.Data;
 using Remp.Application.Profiles;
 using Serilog;
+using Serilog.Events;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace Remp.API;
 
@@ -11,72 +14,98 @@ public class Program
 {
     public static void Main(string[] args)
     {
-
-        var builder = WebApplication.CreateBuilder(args);
-
-        // Create SeriLog Instance
-        Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
-        builder.Host.UseSerilog();
-
-        // Add services to the container.
-        builder.Services.AddControllers();
-
-        // Add Database
-        builder.Services.AddDbContext<RempSQLServerDbContext>(options =>
-        {
-            options.UseSqlServer(builder.Configuration.GetConnectionString("RempSQLServer"));
-        });
-
-        builder.Services.Configure<RempMongoDbSettings>(options =>
-        {
-            options.ConnectionString = builder.Configuration.GetConnectionString("RempMongoDb");
-            options.DatabaseName = builder.Configuration["DatabaseSettings:DatabaseName"];
-        });
-        builder.Services.AddSingleton<RempMongoDbContext>();
-
-        // Add Swagger
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Version = "v1",
-                Title = "Remp API",
-                Description = "An ASP.NET Core Web API for Managing Recam Platform"
-            });
-            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-            options.IncludeXmlComments(xmlPath);
-        });
-
-        // Add AutoMapper
-        builder.Services.AddAutoMapper(cfg => { }, typeof(ListingCaseProfile).Assembly);
-
-        var app = builder.Build();
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.UseAuthorization();
-
-
-        app.MapControllers();
+        // Create bootstrap logger for early startup logging
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
 
         try
         {
-            Log.Information("🚀 Application starting up...");
+            Log.Information("Starting web application");
+
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Configure Serilog with full configuration and DI integration
+            builder.Services.AddSerilog((services, lc) => lc
+                .ReadFrom.Configuration(builder.Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext());
+
+            // Add services to the container.
+            builder.Services.AddControllers();
+
+            // Add Database
+            builder.Services.AddDbContext<RempSQLServerDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("RempSQLServer"));
+            });
+
+            builder.Services.Configure<RempMongoDbSettings>(options =>
+            {
+                options.ConnectionString = builder.Configuration.GetConnectionString("RempMongoDb")
+                    ?? throw new InvalidOperationException("Connection string 'RempMongoDb' not found in configuration.");
+                options.DatabaseName = builder.Configuration["DatabaseSettings:DatabaseName"]
+                    ?? throw new InvalidOperationException("Configuration 'DatabaseSettings:DatabaseName' not found.");
+            });
+            builder.Services.AddSingleton<RempMongoDbContext>();
+
+            // Add Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Remp API",
+                    Description = "An ASP.NET Core Web API for Managing Recam Platform"
+                });
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+                options.IncludeXmlComments(xmlPath);
+            });
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            app.UseSerilogRequestLogging();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseAuthorization();
+
+            app.MapControllers();
+
+            // Log application startup information after it actually starts
+            app.Lifetime.ApplicationStarted.Register(() =>
+            {
+                var addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()?.Addresses;
+                var urls = addresses != null && addresses.Any() ? string.Join(", ", addresses) : "Unknown";
+
+                Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
+                Log.Information("Listening on: {Urls}", urls);
+
+                if (app.Environment.IsDevelopment() && addresses != null && addresses.Any())
+                {
+                    var firstUrl = addresses.First();
+                    Log.Information("Swagger UI: {SwaggerUrl}/swagger", firstUrl);
+                    Log.Information("Swagger JSON: {SwaggerUrl}/swagger/v1/swagger.json", firstUrl);
+                }
+            });
+
             app.Run();
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "❌ Application terminated unexpectedly.");
+            Log.Fatal(ex, "Application terminated unexpectedly");
+            throw;
         }
         finally
         {
-            Log.Information("🛑 Application shutting down...");
             Log.CloseAndFlush();
         }
     }
