@@ -1,4 +1,51 @@
 {
   "dotnet.defaultSolution": "Remp.slnx",
-  "markdown.validate.enabled": true
+  "markdown.validate.enabled": true,
+  "cSpell.words": [
+    // Project Names
+    "Remp",
+    "Recam",
+    // Technology Stack
+    "dotnet",
+    "aspnetcore",
+    "efcore",
+    "xunit",
+    "coverlet",
+    "serilog",
+    "swashbuckle",
+    "mongodb",
+    "mssql",
+    "sqlcmd",
+    "automapper",
+    "fluentvalidation",
+    // .NET Terms
+    "DbContext",
+    "DbContextFactory",
+    "appsettings",
+    "usings",
+    "nullable",
+    "sln",
+    "slnx",
+    "csproj",
+    "middlewares",
+    "DTOs",
+    // Config Files
+    "gitignore",
+    "editorconfig",
+    "dockerignore",
+    "composefile",
+    // Architecture Terms
+    "microservices",
+    "layered",
+    // Common Abbreviations
+    "API",
+    "CRUD",
+    "DTO",
+    "POCO",
+    "Auth",
+    "Repo",
+    "TODO",
+    "Swagger",
+    "OpenAPI"
+  ]
 }
