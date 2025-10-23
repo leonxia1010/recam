@@ -1,0 +1,22 @@
+{
+  "ConnectionStrings": {
+    "RempSQLServer": "Server=localhost,1434;Database=YOUR_DEV_DATABASE;User Id=sa;Password=YOUR_DEV_PASSWORD;MultipleActiveResultSets=True;Encrypt=false;TrustServerCertificate=True;",
+    "RempMongoDb": "mongodb://YOUR_DEV_USERNAME:YOUR_DEV_PASSWORD@localhost:27017"
+  },
+  "DatabaseSettings": {
+    "DatabaseName": "YOUR_DEV_MONGO_DATABASE"
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Information",
+        "System": "Information"
+      }
+    },
+    "Enrich": ["FromLogContext"]
+  },
+  "Jwt": {
+    "Key": "YOUR_DEVELOPMENT_SECRET_KEY_AT_LEAST_32_CHARACTERS"
+  }
+}

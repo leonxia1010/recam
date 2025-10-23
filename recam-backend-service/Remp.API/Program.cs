@@ -2,11 +2,16 @@ using System.Reflection;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Remp.DataAccess.Data;
+using Remp.Model.Entities;
 using Remp.Application.Profiles;
 using Serilog;
 using Serilog.Events;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Remp.API;
 
@@ -45,11 +50,34 @@ public class Program
             builder.Services.Configure<RempMongoDbSettings>(options =>
             {
                 options.ConnectionString = builder.Configuration.GetConnectionString("RempMongoDb")
-                    ?? throw new InvalidOperationException("Connection string 'RempMongoDb' not found in configuration.");
+                    ?? throw new InvalidOperationException("Connection string 'RempMongoDb' not configured.");
                 options.DatabaseName = builder.Configuration["DatabaseSettings:DatabaseName"]
-                    ?? throw new InvalidOperationException("Configuration 'DatabaseSettings:DatabaseName' not found.");
+                    ?? throw new InvalidOperationException("Configuration 'DatabaseSettings:DatabaseName' not configured.");
             });
             builder.Services.AddSingleton<RempMongoDbContext>();
+
+            // Add Jwt
+            builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<RempSQLServerDbContext>().AddDefaultTokenProviders();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer not configured"),
+                    ValidAudience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience not configured"),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured")))
+                };
+            });
 
             // Add Swagger
             builder.Services.AddEndpointsApiExplorer();
@@ -76,6 +104,7 @@ public class Program
                 app.UseSwaggerUI();
             }
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
