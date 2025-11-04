@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Common;
-using Microsoft.EntityFrameworkCore;
 using Remp.Model.Enums;
 
 namespace Remp.Model.Entities;
@@ -43,6 +40,7 @@ public class ListingCase
     // public string UserId { get; set; } = string.Empty;
     // [ForeignKey(nameof(UserId))]
     // public User User { get; set; } = null!;
+    public ICollection<Agent> Agents { get; set; } = new List<Agent>();
     public ICollection<CaseContact> CaseContacts { get; set; } = new List<CaseContact>();
     public ICollection<MediaAsset> MediaAssets { get; set; } = new List<MediaAsset>();
 
