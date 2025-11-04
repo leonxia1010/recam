@@ -35,6 +35,7 @@ public class ListingCaseConfiguration : IEntityTypeConfiguration<ListingCase>
         builder.Property(lc => lc.CreatedAt).HasDefaultValueSql("GETUTCDATE()").ValueGeneratedOnAdd();
         builder.Property(lc => lc.IsDeleted).IsRequired().HasDefaultValue(false);
 
+        builder.HasMany(lc => lc.Agents).WithMany(a => a.ListingCases);
         builder.HasMany(lc => lc.CaseContacts).WithOne(cc => cc.ListingCase).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(lc => lc.MediaAssets).WithOne(ma => ma.ListingCase).OnDelete(DeleteBehavior.Cascade);
 
