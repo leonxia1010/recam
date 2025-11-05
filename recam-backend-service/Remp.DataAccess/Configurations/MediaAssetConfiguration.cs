@@ -20,6 +20,6 @@ public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
         builder.Property(ma => ma.IsHero).HasDefaultValue(false);
         builder.Property(ma => ma.IsDeleted).HasDefaultValue(false);
 
-
+        builder.HasOne(ma => ma.User).WithMany(u => u.MediaAssets);
     }
 }

@@ -36,10 +36,9 @@ public class ListingCase
     public DateTime CreatedAt { get; set; }
     public bool IsDeleted { get; set; }
 
-    // TODO Comment out when user model is ready
-    // public string UserId { get; set; } = string.Empty;
-    // [ForeignKey(nameof(UserId))]
-    // public User User { get; set; } = null!;
+    public string UserId { get; set; } = string.Empty;
+    [ForeignKey(nameof(UserId))]
+    public User User { get; set; } = null!;
     public ICollection<Agent> Agents { get; set; } = new List<Agent>();
     public ICollection<CaseContact> CaseContacts { get; set; } = new List<CaseContact>();
     public ICollection<MediaAsset> MediaAssets { get; set; } = new List<MediaAsset>();

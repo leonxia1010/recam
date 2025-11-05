@@ -12,11 +12,11 @@ public class Agent
     public string AgentFirstName { get; set; } = string.Empty;
     public string AgentLastName { get; set; } = string.Empty;
     public string AvatarUrl { get; set; } = string.Empty;
-    public string CompanyName { get; set; } = string.Empty;
-    // TODO Comment out when user model is ready
-    // public string UserId { get; set; } = string.Empty;
-    // [ForeignKey(nameof(UserId))]
-    // public User User { get; set; } = null!;
+    public string AgentCompanyName { get; set; } = string.Empty;
+
+    public string UserId { get; set; } = string.Empty;
+    [ForeignKey(nameof(UserId))]
+    public User User { get; set; } = null!;
     public ICollection<ListingCase> ListingCases { get; set; } = new List<ListingCase>();
     public ICollection<PhotographyCompany> PhotographyCompanies { get; set; } = new List<PhotographyCompany>();
 
