@@ -14,6 +14,7 @@ public class PhotographyCompanyConfiguration : IEntityTypeConfiguration<Photogra
 
         builder.Property(pc => pc.PhotographyCompanyName).IsRequired().HasMaxLength(200);
 
+        builder.HasOne(pc => pc.User).WithOne(u => u.PhotographyCompany).HasForeignKey<PhotographyCompany>(pc => pc.UserId).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(pc => pc.Agents).WithMany(a => a.PhotographyCompanies);
     }
 }

@@ -20,11 +20,10 @@ public class MediaAsset
     public bool IsHero { get; set; }
     public bool IsDeleted { get; set; }
 
+    public string UserId { get; set; } = string.Empty;
+    [ForeignKey(nameof(UserId))]
+    public User User { get; set; } = null!;
     public int ListingCaseId { get; set; }
     [ForeignKey(nameof(ListingCaseId))]
     public ListingCase ListingCase { get; set; } = null!;
-    // TODO Comment out when user model is ready
-    // public string UserId { get; set; } = string.Empty;
-    // [ForeignKey(nameof(UserId))]
-    // public User User { get; set; } =  null!;
 }
