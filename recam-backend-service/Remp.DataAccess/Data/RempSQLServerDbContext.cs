@@ -6,13 +6,15 @@ using Remp.DataAccess.Configurations;
 
 namespace Remp.DataAccess.Data;
 
-public class RempSQLServerDbContext : IdentityDbContext<User>
+public class RempSQLServerDbContext : IdentityDbContext<User, Role, string>
 {
     public DbSet<ListingCase> ListingCases { get; set; }
     public DbSet<CaseContact> CaseContacts { get; set; }
     public DbSet<MediaAsset> MediaAssets { get; set; }
     public DbSet<Agent> Agents { get; set; }
     public DbSet<PhotographyCompany> PhotographyCompanies { get; set; }
+
+    public DbSet<AgentListingCase> AgentListingCases { get; set; }
 
     public RempSQLServerDbContext(DbContextOptions options) : base(options)
     {

@@ -35,7 +35,32 @@ public class ListingCaseConfiguration : IEntityTypeConfiguration<ListingCase>
         builder.Property(lc => lc.CreatedAt).HasDefaultValueSql("GETUTCDATE()").ValueGeneratedOnAdd();
         builder.Property(lc => lc.IsDeleted).IsRequired().HasDefaultValue(false);
 
-        builder.HasMany(lc => lc.Agents).WithMany(a => a.ListingCases);
+        builder.HasOne(lc => lc.User).WithMany(u => u.ListingCases);
+        builder.HasMany(lc => lc.Agents)
+            .WithMany(a => a.ListingCases)
+            .UsingEntity<AgentListingCase>(
+                joinEntityBuilder =>
+                {
+                    joinEntityBuilder.HasKey(al => new { al.AgentId, al.ListingCaseId });
+
+                    joinEntityBuilder.Property(al => al.AssignedAt).HasDefaultValueSql("GETUTCDATE()");
+
+                    joinEntityBuilder
+                        .HasOne(al => al.Agent)
+                        .WithMany()
+                        .HasForeignKey(al => al.AgentId);
+
+                    joinEntityBuilder
+                        .HasOne(al => al.ListingCase)
+                        .WithMany()
+                        .HasForeignKey(al => al.ListingCaseId);
+
+                    joinEntityBuilder
+                        .HasOne(al => al.AssignedByPhotographyCompany)
+                        .WithMany()
+                        .HasForeignKey(al => al.AssignedByPhotographyCompanyId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
         builder.HasMany(lc => lc.CaseContacts).WithOne(cc => cc.ListingCase).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(lc => lc.MediaAssets).WithOne(ma => ma.ListingCase).OnDelete(DeleteBehavior.Cascade);
 

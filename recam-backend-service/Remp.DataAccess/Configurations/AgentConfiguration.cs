@@ -15,9 +15,22 @@ public class AgentConfiguration : IEntityTypeConfiguration<Agent>
         builder.Property(a => a.AgentFirstName).IsRequired().HasMaxLength(50);
         builder.Property(a => a.AgentLastName).IsRequired().HasMaxLength(50);
         builder.Property(a => a.AvatarUrl).HasMaxLength(2000);
-        builder.Property(a => a.CompanyName).IsRequired().HasMaxLength(200);
+        builder.Property(a => a.AgentCompanyName).IsRequired().HasMaxLength(200);
 
-        builder.HasMany(a => a.ListingCases).WithMany(lc => lc.Agents);
-        builder.HasMany(a => a.PhotographyCompanies).WithMany(pc => pc.Agents);
+        builder.HasOne(a => a.User).WithOne(u => u.Agent).HasForeignKey<Agent>(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(a => a.PhotographyCompanies)
+            .WithMany(pc => pc.Agents)
+            .UsingEntity<Dictionary<string, object>>(
+                "AgentPhotographyCompany",
+                joinToPhotographyCompany => joinToPhotographyCompany
+                    .HasOne<PhotographyCompany>()
+                    .WithMany()
+                    .HasForeignKey("PhotographyCompaniesId")
+                    .OnDelete(DeleteBehavior.Restrict),
+                joinToAgent => joinToAgent
+                    .HasOne<Agent>()
+                    .WithMany()
+                    .HasForeignKey("AgentsId")
+                    .OnDelete(DeleteBehavior.Cascade));
     }
 }
