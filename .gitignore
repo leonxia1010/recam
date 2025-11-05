@@ -65,6 +65,7 @@ project-doc/
 CLAUDE.md
 .serena/
 deploy.yaml.example
+.codex/
 
 # Script
 scripts/
