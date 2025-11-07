@@ -73,3 +73,5 @@ scripts/
 # env
 .env
 .env.local
+Library/
+Snippets/

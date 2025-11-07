@@ -109,10 +109,15 @@ public class Program
 
             app.MapControllers();
 
-            // Log application startup information after it actually starts
+            // Log application startup information after it actually starts no matter what the logging level is.
             app.Lifetime.ApplicationStarted.Register(() =>
             {
-                var addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()?.Addresses;
+                var addresses = app.Services
+                    .GetRequiredService<IServer>()
+                    .Features
+                    .Get<IServerAddressesFeature>()
+                    ?.Addresses;
+
                 var urls = addresses != null && addresses.Any() ? string.Join(", ", addresses) : "Unknown";
 
                 Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
@@ -120,9 +125,14 @@ public class Program
 
                 if (app.Environment.IsDevelopment() && addresses != null && addresses.Any())
                 {
-                    var firstUrl = addresses.First();
-                    Log.Information("Swagger UI: {SwaggerUrl}/swagger", firstUrl);
-                    Log.Information("Swagger JSON: {SwaggerUrl}/swagger/v1/swagger.json", firstUrl);
+                    var swaggerProvider = app.Services.GetService<Swashbuckle.AspNetCore.Swagger.ISwaggerProvider>();
+
+                    if (swaggerProvider != null)
+                    {
+                        var firstUrl = addresses.First();
+                        Log.Information("Swagger UI: {SwaggerUrl}/swagger", firstUrl);
+                        Log.Information("Swagger JSON: {SwaggerUrl}/swagger/v1/swagger.json", firstUrl);
+                    }
                 }
             });
 
