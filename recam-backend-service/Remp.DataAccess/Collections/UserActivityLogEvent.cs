@@ -21,6 +21,8 @@ public class UserActivityLogEvent
     [BsonElement("action")]
     [BsonRepresentation(BsonType.String)]
     public UserActivityActionType Activity { get; init; }
+    [BsonElement("isSuccessful")]
+    public bool IsSuccessful { get; init; }
     [BsonElement("eventDetails")]
     [BsonIgnoreIfNull]
     public BsonDocument? Metadata { get; init; }
