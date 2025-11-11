@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Remp.Application.DTOs.Email;
 using Remp.Application.Interfaces;
 using Remp.Model.Settings;
 
@@ -17,9 +18,12 @@ namespace Remp.API.Controllers
         }
 
         [HttpPost("sendEmail")]
-        public async Task<IActionResult> SendEmailAsync(string to, string subject, string body)
+        public async Task<IActionResult> SendEmailAsync([FromBody] EmailRequestDTO emailRequestDTO)
         {
-            await _emailService.SendEmailAsync(to, subject, body);
+            var receiverEmail = emailRequestDTO.ReceiverEmail;
+            var subject = emailRequestDTO.Subject;
+            var body = emailRequestDTO.Body;
+            await _emailService.SendEmailAsync(receiverEmail, subject, body);
             return Ok("Send Email Successfully");
         }
     }
