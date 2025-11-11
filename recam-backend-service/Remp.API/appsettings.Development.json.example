@@ -18,5 +18,12 @@
   },
   "Jwt": {
     "Key": "YOUR_DEVELOPMENT_SECRET_KEY_AT_LEAST_32_CHARACTERS"
+  },
+  "EmailSettings": {
+    "Name": "Remp Dev",
+    "SmtpServer": "smtp.example.com",
+    "SmtpPort": 465,
+    "SenderEmail": "dev@example.com",
+    "Password": "YOUR_DEV_SMTP_PASSWORD"
   }
 }

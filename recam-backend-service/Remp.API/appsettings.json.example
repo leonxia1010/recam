@@ -36,5 +36,12 @@
     "Issuer": "Recam.API",
     "Audience": "Recam.API",
     "ExpiresInMinutes": 60
+  },
+  "EmailSettings": {
+    "Name": "YOUR_SENDER_NAME",
+    "SmtpServer": "YOUR_SMTP_SERVER",
+    "SmtpPort": 465,
+    "SenderEmail": "YOUR_SENDER_EMAIL",
+    "Password": "YOUR_SMTP_PASSWORD_OR_AUTH_CODE"
   }
 }
