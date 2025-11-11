@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Remp.Model.Settings;
+using Remp.Application.Interfaces;
+using Remp.Application.Services;
 
 namespace Remp.API;
 
@@ -29,6 +32,7 @@ public class Program
         try
         {
             Log.Information("Starting web application");
+            var MyAllowSpecificOriginsDev = "_myAllowSpecificOriginsDev";
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +83,19 @@ public class Program
                 };
             });
 
+            // Add EmailService
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.AddScoped<IEmailService, EmailService>();
+
+            // Add Cors
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOriginsDev, policy =>
+                {
+                    policy.WithOrigins("http://localhost:5000").AllowAnyHeader().AllowAnyMethod();
+                });
+            });
+
             // Add Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
@@ -103,7 +120,7 @@ public class Program
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCors(MyAllowSpecificOriginsDev);
             app.UseAuthentication();
             app.UseAuthorization();
 
